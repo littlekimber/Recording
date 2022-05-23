@@ -1,9 +1,11 @@
 import { StatusBar } from 'expo-status-bar';
-import {Image, Button, StyleSheet, Text, SafeAreaView, TouchableOpacity} from 'react-native';
+import {Image, StyleSheet, Text, SafeAreaView, TouchableOpacity} from 'react-native';
+import {Button} from 'react-native-paper';
 import React, {useState, useEffect} from 'react';
 import {Audio} from 'expo-av';
-
-
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
+import {faPlayCircle} from '@fortawesome/free-solid-svg-icons'
 
 
 export default function App() {
@@ -15,13 +17,14 @@ export default function App() {
   const [canStop, setCanStop] = useState(false);
   const [canPlay, setCanPlay] = useState(false);
   const [canPause, setCanPause] = useState(false);
+  const [buttonState, setButtonState] = useState('play');
 
   async function startRecording() {
     try{
       setCanStop(true);
       setCanPlay(false);
+      setButtonState('stop');
       const permisson = await Audio.requestPermissionsAsync();
-      console.log(permisson);
       if(permisson.status==='granted'){
         await Audio.setAudioModeAsync({
           allowsRecordingIOS:true,
@@ -31,6 +34,7 @@ export default function App() {
         const {recording} = await Audio.Recording.createAsync(
           Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
         )
+        console.log(recording);
         setRecording(recording);
       }else{
         setMessage('Please give the permission to record!')
@@ -46,6 +50,7 @@ export default function App() {
     setCanStop(false);
     setCanPlay(true);
     setCanPause(true);
+    setButtonState('play');
     setRecording(undefined);
     setMessage('Recording stopped');
     await recording.stopAndUnloadAsync();
@@ -72,6 +77,7 @@ export default function App() {
     setCanPlay(false);
     setCanPause(true);
     await recordings[recordings.length-1].sound.replayAsync();
+    setCanPlay(true);
   }
 
   async function pause(){
@@ -79,44 +85,33 @@ export default function App() {
     setCanPause(false);
     await recordings[recordings.length-1].sound.stopAsync();
   }
+
+  
+
   return (
     <SafeAreaView style={styles.container}>
+      {/* title area */}
       <SafeAreaView>
         <Text className='title' style={styles.title}>
           {message}
         </Text>
       </SafeAreaView>
-      <SafeAreaView>
-        <Text>
-         
-        </Text>
-      </SafeAreaView>
-      <SafeAreaView style={{
-        flexDirection: 'row'
-      }}>
-        <TouchableOpacity onPress={startRecording}>
-          <Image
-            source={require('./assets/start.png')}
-            style={styles.image}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={stopRecording} disabled={!canStop}>
-          <Image 
-            source={require('./assets/stop.png')}
-            style={styles.image}
-          />
-        </TouchableOpacity>
-      </SafeAreaView>
+
+      {/* recording and stop area, combine recording with stoping in one button */}
+      <Button 
+        mode="contained" icon={buttonState} onPress={!recording?startRecording:stopRecording} 
+        style={styles.button}
+
+      >
+        {!recording?'record':'stop'}
+      </Button>
+
+      
 
       <StatusBar style="auto" />
 
-      <SafeAreaView style={{
-        flexDirection: 'row',
-        margin: 20
-      }}>
-        <Text style={styles.text}>record</Text>
-        <Text style={styles.text}>stop</Text>
-      </SafeAreaView>
+      {/* show duration time */}
+     
 
       <SafeAreaView style={{
         flexDirection: 'row',
@@ -124,22 +119,25 @@ export default function App() {
       }}>
         <Text>{recordings.length>=1?"Recorded time: "+`${recordings[recordings.length-1].duration}`:"no current recording"}</Text>
       </SafeAreaView>
-    
+      
+      
+      
 
+      
       <SafeAreaView style={{
         flexDirection: 'row'
       }}>
         <TouchableOpacity onPress={replay} disabled={!canPlay}>
           <Image 
             source={require('./assets/replay.png')}
-            style={styles.image}
+            style={canPlay?styles.image:styles.image_disable}
           />
         </TouchableOpacity>
 
         <TouchableOpacity onPress={pause} disabled={!canPause}>
           <Image
               source={require('./assets/replaystop.png')}
-              style={styles.image}
+              style={canPause?styles.image:styles.image_disable}
             />
         </TouchableOpacity>
       </SafeAreaView>
@@ -167,14 +165,25 @@ const styles = StyleSheet.create({
   },
 
   button: {
-
+    margin:20, 
+    width: 200,
+    marginTop: 5,
+    
   },
 
   image: {
     width: 50,
     height: 50,
     margin: 12,
-    marginBottom: 0
+    marginBottom: 0,
+  },
+
+  image_disable: {
+    width: 50,
+    height: 50,
+    margin: 12,
+    marginBottom: 0,
+    opacity: 0.2
   },
 
   text: {
