@@ -18,7 +18,6 @@ export default function App() {
   const [canPlay, setCanPlay] = useState(false);
   const [canPause, setCanPause] = useState(false);
   const [buttonState, setButtonState] = useState('play');
-
   async function startRecording() {
     try{
       setCanStop(true);
@@ -34,7 +33,6 @@ export default function App() {
         const {recording} = await Audio.Recording.createAsync(
           Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
         )
-        console.log(recording);
         setRecording(recording);
       }else{
         setMessage('Please give the permission to record!')
@@ -49,7 +47,6 @@ export default function App() {
     setCanRecord(true);
     setCanStop(false);
     setCanPlay(true);
-    setCanPause(true);
     setButtonState('play');
     setRecording(undefined);
     setMessage('Recording stopped');
@@ -76,17 +73,29 @@ export default function App() {
   async function replay(){
     setCanPlay(false);
     setCanPause(true);
+    setCanRecord(false);
     await recordings[recordings.length-1].sound.replayAsync();
+    let time = change_duration_number();
+    console.log(time);
+    setTimeout(()=>{setCanRecord(true)}, time*1000);
+    setTimeout(()=>{setCanPause(false)}, time*1000);
+    
     setCanPlay(true);
   }
 
   async function pause(){
     setCanPlay(true);
     setCanPause(false);
+    setCanRecord(true);
     await recordings[recordings.length-1].sound.stopAsync();
   }
 
-  
+  function change_duration_number(){
+    let seconds = parseInt(recordings[recordings.length-1].duration.slice(-1), 10);
+    let ten_seconds = parseInt(recordings[recordings.length-1].duration[2], 10)*10;
+    let minutes = parseInt(recordings[recordings.length-1].duration[0] , 10)*60;
+    return seconds+ten_seconds+minutes;
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -101,7 +110,7 @@ export default function App() {
       <Button 
         mode="contained" icon={buttonState} onPress={!recording?startRecording:stopRecording} 
         style={styles.button}
-
+        disabled={!canRecord}
       >
         {!recording?'record':'stop'}
       </Button>
