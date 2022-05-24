@@ -1,5 +1,11 @@
 # Recording
 
+## Usage 
+1. git clone -b master <-link>
+2. npm install 
+3. npm start 
+4. go to the link and scan the QR code
+
 ## User Interface
 
 <img src='https://user-images.githubusercontent.com/100450092/169945318-edca1e7b-d481-4ec7-beb7-63a3b00912de.png' width='300px' height='400px'>
