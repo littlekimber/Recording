@@ -21,6 +21,13 @@
 7. **Permission denial:** The record can be only used after the user grantes the permission. If user refuses to grant it. It will show a message on the screen.
 
 ## Dependency
-**Used module:** react-native paper for record and stop button design. expo-av for implementing the record, stop, play and pause button. 
+**Used module:** **react-native-paper** for record and stop button design. **expo-av** for implementing the record, stop, play and pause button. 
+**react** built-in hook to keep track of and change the state of buttons. 
 
-
+## Phrase for building this App
+1. Initializing the project and build the UI(start from a simple one). 
+2. Implementing the record button(search the suitable library that supports recording)
+3. Adding other features, like play, stop and pause.  
+4. Simple work done! App workes following the corrent step, i.e record->stop->play->pause 
+5. Manage the state of the button, that the most challenge phrases. I draw a picture to help me figure out in which state certain button shoule be enabled or disabled.
+6. Unit test. Haven't learn about do it on mobile phone with code, so I do it manually with several cases.  
