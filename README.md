@@ -1,7 +1,7 @@
 # Recording
 
 ## Usage 
-1. git clone -b master <-link>
+1. git clone -b master (link here)
 2. npm install 
 3. npm start 
 4. go to the link and scan the QR code
